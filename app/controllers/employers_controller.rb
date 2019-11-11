@@ -15,3 +15,5 @@ class EmployersController < ApplicationController
     )
   end
 end
+
+employer_find_by(name: employer_params)
