@@ -10,10 +10,11 @@ class ApplicantsController < ApplicationController
   end
 
   def show
-    applicant = Applicant.find_by(id: params[:id])
+    applicant = Applicant.find_by(name: params[:name])
     render json: applicant.to_json( 
       :only => [:id, :name, :location],
-      :include => {:jobs => {:only => [:title, :description, :created_at], :include => {:employer => {:only => [:name, :location]}}}}
+      :include => {:jobs => {:only => [:title, :description, :created_at], 
+      :include => {:employer => {:only => [:name, :location]}}}}
     )
   end
   
