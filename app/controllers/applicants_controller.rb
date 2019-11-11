@@ -13,9 +13,7 @@ class ApplicantsController < ApplicationController
     applicant = Applicant.find_by(id: params[:id])
     render json: applicant.to_json( 
       :only => [:id, :name, :location],
-      :include => {
-        :jobs => {:only => [:title, :description, :created_at]}
-      }
+      :include => {:jobs => {:only => [:title, :description, :created_at], :include => {:employer => {:only => [:name, :location]}}}}
     )
   end
   
