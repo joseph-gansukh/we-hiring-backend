@@ -16,7 +16,21 @@ class EmployersController < ApplicationController
     )
   end
 
+  def create
+    employer = Employer.new(employer_params)
+    if employer.save
+      render json: employer
+    else
+      render json: employer.errors, status: :unprocessable_entity
+    end
+  end
 
+  private
+
+  def employer_params 
+    params.require(:employer).permit(:name, :field, :location)
+  end
+  
 end
 
-employer_find_by(name: employer_params)
+
