@@ -8,5 +8,5 @@
 
 employer = Employer.create(name: 'FlatIron', field: "School", location: "Chicago")
 job = Job.create(title: "React Developer", description: "make websites in React", employer_id: 1)
-applicant = Applicant.create(name: "Laura", location: "Chicago")
+applicant = Applicant.create(name: "Laura", location: "Chicago", username: "laura", password_digest: 'laura')
 jobapplicant = JobApplicant.create(job_id: 1, applicant_id: 1)
