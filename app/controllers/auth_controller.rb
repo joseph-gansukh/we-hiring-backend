@@ -1,12 +1,12 @@
 class AuthController < ApplicationController
   # skip_before_action :authorized, only: [:create] 
   def create
-    if params[:auth][:userType] == "applicant"
+    if params[:auth][:usertype] == "applicant"
       applicant = Applicant.find_by(name: params[:name])
       #User#authenticate comes from BCrypt
       if applicant && applicant.authenticate(params[:password])
         # encode token comes from ApplicationController
-        token = JWT.encode({ applicant_id: applicant.id, userType: 'applicant' }, 'app_secret', 'HS256')
+        token = JWT.encode({ applicant_id: applicant.id, usertype: 'applicant' }, 'app_secret', 'HS256')
         jsonVariable = applicant.to_json( 
           :only => [:id, :name, :location, :usertype],
           :include => {:jobs => {:only => [:title, :description, :created_at], 
@@ -18,10 +18,10 @@ class AuthController < ApplicationController
         render json: { message: 'Invalid username or password' }, status: :unauthorized
       end
     
-    elsif params[:auth][:userType] == "employer"
+    elsif params[:auth][:usertype] == "employer"
       employer = Employer.find_by(name: params[:name])
       if employer && employer.authenticate(params[:password])
-        token = JWT.encode({employer_id: employer.id, userType: 'employer'}, 'app_secret', 'HS256')
+        token = JWT.encode({employer_id: employer.id, usertype: 'employer'}, 'app_secret', 'HS256')
         jsonVariable = employer.to_json( 
               :only => [:id, :name, :location, :field, :usertype],
               :include => {:jobs => {:only => [:title, :description, :created_at], :include => {:applicants => {:only => [:name, :location]}}}}
@@ -37,7 +37,7 @@ class AuthController < ApplicationController
   def show
     jwt_token = request.headers[:Authorization]
     decode_token = JWT.decode(jwt_token, 'app_secret', true, algorithm: 'HS256')
-    user_type = decode_token[0]['userType']
+    user_type = decode_token[0]['usertype']
     if user_type == 'applicant'
       id = decode_token[0]['id']
       applicant = Applicant.find(id)
