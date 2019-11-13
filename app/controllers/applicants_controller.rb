@@ -9,21 +9,15 @@ class ApplicantsController < ApplicationController
     )
   end
 
-  # def show
-  #   p "APPLICANT######SHOW "
-  #   p params
-  #   applicant = Applicant.find_by(name: params[:name])
-  #   if applicant && applicant.authenticate(params[:password])
-  #     render json: applicant.to_json( 
-  #       :only => [:id, :name, :location],
-  #       :include => {:jobs => {:only => [:title, :description, :created_at], 
-  #       :include => {:employer => {:only => [:name, :location]}}}}
-  #     )
-  #   else
-  #     p "NOT AUTHENTICATED"
-  #   end
+  def show
+    applicant = Applicant.find_by(name: params[:name])
+    render json: applicant.to_json( 
+      :only => [:id, :name, :location],
+      :include => {:jobs => {:only => [:title, :description, :created_at], 
+      :include => {:employer => {:only => [:name, :location]}}}}
+    )
 
-  # end
+  end
   
   def create
     applicant = Applicant.create(applicant_params)

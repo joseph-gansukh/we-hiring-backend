@@ -7,14 +7,13 @@ class EmployersController < ApplicationController
     )
   end
 
-  # def show
-  #   employer = Employer.find_by(name: params[:name])
-  #   p employer.id
-  #   render json: employer.to_json( 
-  #     :only => [:id, :name, :location, :field],
-  #     :include => {:jobs => {:only => [:title, :description, :created_at], :include => {:applicants => {:only => [:name, :location]}}}}
-  #   )
-  # end
+  def show
+    employer = Employer.find_by(name: params[:name])
+    render json: employer.to_json( 
+      :only => [:id, :name, :location, :field],
+      :include => {:jobs => {:only => [:title, :description, :created_at], :include => {:applicants => {:only => [:name, :location]}}}}
+    )
+  end
 
   def create
     employer = Employer.create(employer_params)
