@@ -5,11 +5,9 @@ Rails.application.routes.draw do
    post '/auth', to: 'auth#create'
    get '/auth', to: 'auth#show'
   
-  
   resources :employers, param: :name
-
-
-
+    post '/auth', to: 'auth#create'
+    get '/auth', to: 'auth#show'
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

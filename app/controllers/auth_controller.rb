@@ -1,34 +1,35 @@
 class AuthController < ApplicationController
   # skip_before_action :authorized, only: [:create] 
   def create
-    p 'PARAMS IN AUTH CONTROLLER IF STATEMENT'
-    p params[:auth][:userType]
     if params[:auth][:userType] == "applicant"
       applicant = Applicant.find_by(name: params[:name])
       #User#authenticate comes from BCrypt
       if applicant && applicant.authenticate(params[:password])
         # encode token comes from ApplicationController
         token = JWT.encode({ applicant_id: applicant.id, userType: 'applicant' }, 'app_secret', 'HS256')
-        p "TOKEN"
-        p token
         jsonVariable = applicant.to_json( 
           :only => [:id, :name, :location],
-          :include => {
-            :jobs => {
-              :only => [:title, :description, :created_at], 
-              :include => {
-                :employer => {
-                  :only => [:name, :location]
-                }
-              }
-            },
-          }
-          )
+          :include => {:jobs => {:only => [:title, :description, :created_at], 
+          :include => {:employer => {:only => [:name, :location]}}}
+          })
           foo = JSON.parse jsonVariable
         render json: {banana: foo, token: token}
-        p 'finished sending banana'
       else
         render json: { message: 'Invalid username or password' }, status: :unauthorized
+      end
+    
+    elsif params[:auth][:userType] == "employer"
+      employer = Employer.find_by(name: params[:name])
+      if employer && employer.authenticate(params[:password])
+        token = JWT.encode({employer_id: employer.id, userType: 'employer'}, 'app_secret', 'HS256')
+        jsonVariable = employer.to_json( 
+              :only => [:id, :name, :location, :field],
+              :include => {:jobs => {:only => [:title, :description, :created_at], :include => {:applicants => {:only => [:name, :location]}}}}
+            )
+        employerData = JSON.parse jsonVariable
+        render json: {employer: employerData, token: token}
+      else
+        render json: {message: 'Invalid username or password'}, status: :unauthorized
       end
     end
   end
@@ -40,7 +41,7 @@ class AuthController < ApplicationController
     if user_type == 'applicant'
       id = decode_token[0]['id']
       applicant = Applicant.find(id)
-      output = { name: applicant.name, user_type: 'applicant', id: applicant.id, email: applicant.email, token: jwt_token }
+      output = { name: applicant.name, user_type: 'applicant', id: applicant.id, token: jwt_token }
       if applicant
         render json: output
       else
