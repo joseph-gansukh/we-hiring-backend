@@ -8,7 +8,7 @@ class AuthController < ApplicationController
         # encode token comes from ApplicationController
         token = JWT.encode({ applicant_id: applicant.id, userType: 'applicant' }, 'app_secret', 'HS256')
         jsonVariable = applicant.to_json( 
-          :only => [:id, :name, :location],
+          :only => [:id, :name, :location, :usertype],
           :include => {:jobs => {:only => [:title, :description, :created_at], 
           :include => {:employer => {:only => [:name, :location]}}}
           })
@@ -23,7 +23,7 @@ class AuthController < ApplicationController
       if employer && employer.authenticate(params[:password])
         token = JWT.encode({employer_id: employer.id, userType: 'employer'}, 'app_secret', 'HS256')
         jsonVariable = employer.to_json( 
-              :only => [:id, :name, :location, :field],
+              :only => [:id, :name, :location, :field, :usertype],
               :include => {:jobs => {:only => [:title, :description, :created_at], :include => {:applicants => {:only => [:name, :location]}}}}
             )
         employerData = JSON.parse jsonVariable
