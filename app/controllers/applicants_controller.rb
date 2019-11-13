@@ -2,7 +2,7 @@ class ApplicantsController < ApplicationController
   def index
     applicants = Applicant.all
     render json: applicants.to_json( 
-      :only => [:id, :name, :location],
+      :only => [:id, :name, :location, :usertype],
       # :include => {
       #   :jobs => {:only => [:title, :description, :created_at]}
       # }
@@ -12,9 +12,9 @@ class ApplicantsController < ApplicationController
   def show
     applicant = Applicant.find_by(name: params[:name])
     render json: applicant.to_json( 
-      :only => [:id, :name, :location],
+      :only => [:id, :name, :location, :usertype],
       :include => {:jobs => {:only => [:title, :description, :created_at], 
-      :include => {:employer => {:only => [:name, :location]}}}}
+      :include => {:employer => {:only => [:name, :location, :usertype]}}}}
     )
 
   end
@@ -23,7 +23,7 @@ class ApplicantsController < ApplicationController
     applicant = Applicant.create(applicant_params)
     if applicant.valid?
       token = encode_token(applicant_id: applicant.id)
-      render json: {applicant: applicant, jwt: token}, status: :created
+      render json: {applicant: applicant, jwt: token, usertype: applicant.usertype}, status: :created
     else
       render json: { error: 'failed to create user' }, status: :not_acceptable
     end
@@ -46,7 +46,7 @@ class ApplicantsController < ApplicationController
   private
 
   def applicant_params
-    params.require(:applicant).permit(:name, :location, :password)
+    params.require(:applicant).permit(:name, :location, :password, :usertype)
   end
 
 end
