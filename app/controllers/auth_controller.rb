@@ -10,7 +10,7 @@ class AuthController < ApplicationController
         jsonVariable = applicant.to_json( 
           :only => [:id, :name, :location, :usertype],
           :include => {:jobs => {:only => [:title, :description, :created_at], 
-          :include => {:employer => {:only => [:name, :location]}}}
+          :include => {:employer => {:only => [:name, :field, :location]}}}
           })
           foo = JSON.parse jsonVariable
         render json: {banana: foo, token: token}
